@@ -2,7 +2,6 @@ library(dplyr)
 library(qqman)
 library(ggrepel)
 
-getwd()
 data_files <- list.files("results_file/severity_cat/")
 
 l=lapply(1:length(data_files), function(i){
