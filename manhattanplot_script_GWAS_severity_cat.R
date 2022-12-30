@@ -2,13 +2,13 @@ library(dplyr)
 library(qqman)
 library(ggrepel)
 
-setwd("D:/OneDrive/Documentos/Git/Rstudio/Admixture/SCOURGE_GWAs_SNPTest/")
+setwd("D:/Git/Rstudio/Admixture")
 
-data_files <- list.files("D:/OneDrive/Documentos/Git/Rstudio/Admixture/SCOURGE_GWAs_SNPTest/results_file/severity_cont/")
+data_files <- list.files("/OneDrive/Documentos/Latinos/snptest_files/results_file/severity_cat/")
 
 l=lapply(1:length(data_files), function(i){
   assign(paste0("res_", i),                                  
-         read.delim(paste0("D:/OneDrive/Documentos/Git/Rstudio/Admixture/SCOURGE_GWAs_SNPTest/results_file/severity_cont/", data_files[i]), 
+         read.delim(paste0("/OneDrive/Documentos/Latinos/snptest_files/results_file/severity_cat/", data_files[i]), 
                     sep="\t", header = T, na.strings = "NA", skip = 11))
 })
 
