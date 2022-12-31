@@ -2,12 +2,12 @@ library(dplyr)
 library(qqman)
 library(ggrepel)
 
-data_files <- list.files("results_file/severity_cont/")
+data_files <- list.files("results_file/hospitalization/")
 
 l=lapply(1:length(data_files), function(i){
   assign(paste0("res_", i),                                  
-         read.delim(paste0("results_file/severity_cont/", data_files[i]), 
-                    sep=" ", header = T, na.strings = "NA"))
+         read.delim(paste0("results_file/hospitalization/", data_files[i]), 
+                    sep="", header = T, na.strings = "NA"))
 })
 
 p=lapply(1:length(l), function(i){
@@ -21,23 +21,23 @@ p=lapply(1:length(l), function(i){
 res=do.call(rbind,lapply(p, "[[",2))
 head(res)
 
-CHR= as.numeric(res$chromosome)
-BP=res$position
-SNP=res$rsid
-P=res$frequentist_add_pvalue
+CHR = as.numeric(res$chromosome)
+BP = res$position
+SNP = res$rsid
+P = res$frequentist_add_pvalue
 
 gwasResults=data.frame(CHR, BP, SNP, P)
 gwasResults=na.omit(gwasResults)
 
-manhattan(gwasResults, annotatePval = 0.00001, col=c("green","black","blue","orange"))
-
+manhattan(gwasResults, annotatePval = 0.00001,col=c("green","black","blue","orange"))
 
 gwasResults_order <- gwasResults[order(P),]
 top20=head(gwasResults_order, 20)
-write.csv(top20, "severity_cont_top20.csv", row.names=FALSE, quote=FALSE)
+head(top20, 20)
+write.csv(top20, "hospitalization_top20.csv", row.names=FALSE, quote=FALSE)
 region=rep("region", 20)
 chr=top20[,1]
 startpos=top20[,2]
 endpos=top20[,2]
 snpnexus=data.frame(region,chr,startpos,endpos)
-write.csv(snpnexus, "severity_cont_NexuSNP.csv", row.names=FALSE, quote=FALSE) 
+write.csv(snpnexus, "hospitalization_NexuSNP.csv", row.names=FALSE, quote=FALSE) 
