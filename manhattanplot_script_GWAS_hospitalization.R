@@ -28,7 +28,7 @@ P = res$frequentist_add_pvalue
 
 gwasResults=data.frame(CHR, BP, SNP, P)
 gwasResults=na.omit(gwasResults)
-
+head
 manhattan(gwasResults, annotatePval = 0.00001,col=c("green","black","blue","orange"))
 
 gwasResults_order <- gwasResults[order(P),]
@@ -41,3 +41,5 @@ startpos=top20[,2]
 endpos=top20[,2]
 snpnexus=data.frame(region,chr,startpos,endpos)
 write.csv(snpnexus, "hospitalization_NexuSNP.csv", row.names=FALSE, quote=FALSE) 
+
+qq(gwasResults$P)

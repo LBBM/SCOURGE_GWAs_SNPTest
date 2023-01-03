@@ -1,6 +1,7 @@
 library(dplyr)
 library(qqman)
 library(ggrepel)
+library(QCEWAS)
 
 data_files <- list.files("results_file/severity_cont/")
 
@@ -31,6 +32,8 @@ gwasResults=na.omit(gwasResults)
 
 manhattan(gwasResults, annotatePval = 0.00001, col=c("green","black","blue","orange"))
 
+qq(gwasResults$P)
+P_lambda(gwasResults$P)
 
 gwasResults_order <- gwasResults[order(P),]
 top20=head(gwasResults_order, 20)

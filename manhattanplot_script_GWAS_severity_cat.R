@@ -30,3 +30,5 @@ gwasResults=data.frame(CHR, BP, SNP, P)
 gwasResults=na.omit(gwasResults)
 
 manhattan(gwasResults, annotatePval = 0.00001,col=c("green","black","blue","orange"))
+
+qq(gwasResults$P)
