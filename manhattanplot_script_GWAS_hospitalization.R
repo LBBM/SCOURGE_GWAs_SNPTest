@@ -42,4 +42,40 @@ endpos=top20[,2]
 snpnexus=data.frame(region,chr,startpos,endpos)
 write.csv(snpnexus, "hospitalization_NexuSNP.csv", row.names=FALSE, quote=FALSE) 
 
-qq(gwasResults$P)
+####Q-Qplot + lambda
+getwd()
+
+data_files <- list.files("results_file/onlypvalue_hosp/")
+
+l=lapply(1:length(data_files), function(i){
+  assign(paste0("res_", i),                                  
+         read.delim(paste0("results_file/onlypvalue_hosp/", data_files[i]), 
+                    sep=" ", header = T, na.strings = "NA"))
+})
+
+p=lapply(1:length(l), function(i){
+  df=l[[i]][which(l[[i]]$frequentist_add_pvalue < 2),]
+  res=df[,c(6,7)]
+  
+  return(list(df=as.data.frame(df), 
+              res=as.data.frame(res)))
+})
+
+res=do.call(rbind,lapply(p, "[[",2))
+
+P_lambda(res$frequentist_add_pvalue)
+
+p_values <- as.data.frame(res$frequentist_add_pvalue)
+colnames(p_values) <- "pvalue"
+chisq <- qchisq(1-p_values$pvalue,1)
+lambda_value <- median(chisq)/qchisq(0.5,1)
+lambda_value <- round(lambda_value, digits = 4)
+print(lambda_value)
+
+file_name=c("severity_hospitalization")
+qq_filename <- paste("qqplot-", file_name, ".jpeg", sep="")
+
+#qqplot:
+jpeg(filename = qq_filename, width = 500, height = 500)
+qq(p_values$pvalue, cex.axis = 1.5)
+dev.off()
