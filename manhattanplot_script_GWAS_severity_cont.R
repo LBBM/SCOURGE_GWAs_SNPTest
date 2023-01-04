@@ -76,13 +76,33 @@ file_name=c("severity_cont")
 qq_filename <- paste("qqplot-", file_name, ".jpeg", sep="")
 
 #qqplot:
-jpeg(filename = qq_filename, width = 500, height = 500)
+jpeg(filename = qq_filename, width = 800, height = 800)
 qq(p_values$pvalue, cex.axis = 1.5)
+text(x = 1, y = 6, labels = paste("Lambda =", lambda_value, sep=" "))
 dev.off()
 
 
+####NEXUS SNPs
 
+p=lapply(1:length(l), function(i){
+  df=l[[i]][which(l[[i]]$frequentist_add_pvalue < 0.00001),]
+  res=df[,c(1:7)]
+  
+  return(list(df=as.data.frame(df), 
+              res=as.data.frame(res)))
+})
 
+res=do.call(rbind,lapply(p, "[[",2))
 
+res=subset(res, res$all_maf>0.01)
+head(res)
+dim(res)
 
+write.csv(res, "severity_cont_maf01_p00001.csv", row.names=FALSE, quote=FALSE)
+region=rep("region", 183)
+chr=res[,2]
+startpos=res[,3]
+endpos=res[,3]
+snpnexus=data.frame(region,chr,startpos,endpos)
+write.csv(snpnexus, "severity_cont_NexuSNP.csv", row.names=FALSE, quote=FALSE)
 

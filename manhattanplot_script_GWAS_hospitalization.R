@@ -1,6 +1,7 @@
 library(dplyr)
 library(qqman)
 library(ggrepel)
+library(QCEWAS)
 
 data_files <- list.files("results_file/hospitalization/")
 
@@ -31,25 +32,15 @@ gwasResults=na.omit(gwasResults)
 head
 manhattan(gwasResults, annotatePval = 0.00001,col=c("green","black","blue","orange"))
 
-gwasResults_order <- gwasResults[order(P),]
-top20=head(gwasResults_order, 20)
-head(top20, 20)
-write.csv(top20, "hospitalization_top20.csv", row.names=FALSE, quote=FALSE)
-region=rep("region", 20)
-chr=top20[,1]
-startpos=top20[,2]
-endpos=top20[,2]
-snpnexus=data.frame(region,chr,startpos,endpos)
-write.csv(snpnexus, "hospitalization_NexuSNP.csv", row.names=FALSE, quote=FALSE) 
 
 ####Q-Qplot + lambda
 getwd()
 
-data_files <- list.files("results_file/onlypvalue_hosp/")
+data_files <- list.files("results_file/onlypavalue_hosp/")
 
 l=lapply(1:length(data_files), function(i){
   assign(paste0("res_", i),                                  
-         read.delim(paste0("results_file/onlypvalue_hosp/", data_files[i]), 
+         read.delim(paste0("results_file/onlypavalue_hosp/", data_files[i]), 
                     sep=" ", header = T, na.strings = "NA"))
 })
 
@@ -76,6 +67,32 @@ file_name=c("severity_hospitalization")
 qq_filename <- paste("qqplot-", file_name, ".jpeg", sep="")
 
 #qqplot:
-jpeg(filename = qq_filename, width = 500, height = 500)
+jpeg(filename = qq_filename, width = 800, height = 800)
 qq(p_values$pvalue, cex.axis = 1.5)
+text(x = 1, y = 6, labels = paste("Lambda =", lambda_value, sep=" "))
 dev.off()
+
+
+####NEXUS SNPs
+
+p=lapply(1:length(l), function(i){
+  df=l[[i]][which(l[[i]]$frequentist_add_pvalue < 0.00001),]
+  res=df[,c(1:7)]
+  
+  return(list(df=as.data.frame(df), 
+              res=as.data.frame(res)))
+})
+
+res=do.call(rbind,lapply(p, "[[",2))
+
+res=subset(res, res$all_maf>0.01)
+head(res)
+dim(res)
+
+write.csv(res, "hospitalization_maf01_p00001.csv", row.names=FALSE, quote=FALSE)
+region=rep("region", 75)
+chr=res[,2]
+startpos=res[,3]
+endpos=res[,3]
+snpnexus=data.frame(region,chr,startpos,endpos)
+write.csv(snpnexus, "hospitalization_NexuSNP.csv", row.names=FALSE, quote=FALSE) 
